@@ -118,7 +118,7 @@
     <!-- BUILD -->
     <build>
 
-        <finalName>flowable-ui</finalName>
+        <finalName>flowable-ui.${project.version}-custom</finalName>
 
         <resources>
             <resource>
