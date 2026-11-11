@@ -118,7 +118,7 @@
     <!-- BUILD -->
     <build>
 
-        <finalName>flowable-ui.${project.version}-custom</finalName>
+        <finalName>flowable-ui.${project.version}-tomcat-${tomcat.version}</finalName>
 
         <resources>
             <resource>
