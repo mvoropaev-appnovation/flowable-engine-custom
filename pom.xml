@@ -19,6 +19,7 @@
 		<spring.amqp.version>2.4.9</spring.amqp.version>
 		<spring.security.version>5.8.2</spring.security.version>
 		<spring.kafka.version>2.9.9</spring.kafka.version>
+		<tomcat.version>9.0.123</tomcat.version>
 		<reactor-netty.version>1.0.28</reactor-netty.version>
 		<jackson.version>2.13.5</jackson.version>
 		<jakarta-jms.version>2.0.3</jakarta-jms.version>
@@ -1118,21 +1119,6 @@
 				<groupId>com.microsoft.sqlserver</groupId>
 				<artifactId>mssql-jdbc</artifactId>
 				<version>7.4.1.jre8</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-core</artifactId>
-				<version>9.0.106</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-el</artifactId>
-				<version>9.0.106</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.tomcat.embed</groupId>
-				<artifactId>tomcat-embed-websocket</artifactId>
-				<version>9.0.106</version>
 			</dependency>
 			<dependency>
 				<groupId>org.assertj</groupId>
