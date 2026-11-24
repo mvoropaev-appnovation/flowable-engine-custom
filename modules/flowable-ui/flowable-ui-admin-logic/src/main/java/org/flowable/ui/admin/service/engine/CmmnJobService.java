@@ -51,7 +51,7 @@ public class CmmnJobService {
         String jobUrl = getJobUrl(jobType);
         URIBuilder builder = null;
         try {
-            builder = new URIBuilder(jobUrl);
+            builder = new URIBuilder(jobUrl.substring(0, jobUrl.length() - 1)); // Spring 6+ no longer matches trailing slashes
 
         } catch (Exception e) {
             LOGGER.error("Error building uri", e);
