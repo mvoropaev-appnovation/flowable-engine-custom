@@ -14,10 +14,15 @@ package org.flowable.ui.modeler.servlet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.http.converter.HttpMessageConverters;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
@@ -37,5 +42,14 @@ public class AppDispatcherServletConfiguration extends WebMvcConfigurationSuppor
         RequestMappingHandlerMapping requestMappingHandlerMapping = new RequestMappingHandlerMapping();
         requestMappingHandlerMapping.setRemoveSemicolonContent(false);
         return requestMappingHandlerMapping;
+    }
+
+    @Autowired
+    protected ObjectMapper objectMapper;
+
+    // Flowable REST APIs use Jackson 2 types (ObjectNode, ...); Spring 7 prefers Jackson 3 by default
+    @Override
+    protected void configureMessageConverters(HttpMessageConverters.ServerBuilder builder) {
+        builder.withJsonConverter(new MappingJackson2HttpMessageConverter(objectMapper));
     }
 }
