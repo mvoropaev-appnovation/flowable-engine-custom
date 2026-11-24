@@ -14,7 +14,7 @@ package org.flowable.ui.task.conf;
 
 import org.flowable.ui.task.properties.FlowableTaskAppProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.task.TaskExecutorCustomizer;
+import org.springframework.boot.task.ThreadPoolTaskExecutorCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -33,7 +33,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class ApplicationConfiguration {
 
     @Bean
-    public TaskExecutorCustomizer flowableTaskTaskExecutorCustomizer() {
+    public ThreadPoolTaskExecutorCustomizer flowableTaskTaskExecutorCustomizer() {
         return taskExecutor -> {
             // Not yet exposed via properties in Spring Boot
             taskExecutor.setAwaitTerminationSeconds(30);

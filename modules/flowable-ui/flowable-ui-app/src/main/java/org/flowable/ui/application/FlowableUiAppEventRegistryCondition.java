@@ -75,13 +75,13 @@ public class FlowableUiAppEventRegistryCondition extends SpringBootCondition
         }
 
         if (!kafkaEnabled) {
-            conditions.put("org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration",
+            conditions.put("org.springframework.boot.kafka.autoconfigure.KafkaAutoConfiguration",
                 ConditionOutcome.noMatch("Property flowable.task.app.kafka-enabled was not set to true")
             );
         }
 
         if (!rabbitEnabled) {
-            conditions.put("org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration",
+            conditions.put("org.springframework.boot.rabbitmq.autoconfigure.RabbitAutoConfiguration",
                 ConditionOutcome.noMatch("Property flowable.task.app.rabbit-enabled was not set to true")
             );
         }

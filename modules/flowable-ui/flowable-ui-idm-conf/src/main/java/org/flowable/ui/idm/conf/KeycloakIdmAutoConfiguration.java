@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
+import org.springframework.boot.ldap.autoconfigure.LdapAutoConfiguration;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,7 +57,7 @@ public class KeycloakIdmAutoConfiguration {
         FlowableIdmAppProperties.Keycloak keycloak = properties.getKeycloak();
         KeycloakConfiguration keycloakConfiguration = new KeycloakConfiguration();
 
-        PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
+        PropertyMapper mapper = PropertyMapper.get();
         mapper.from(keycloak.getServer()).to(keycloakConfiguration::setServer);
         mapper.from(keycloak.getAuthenticationRealm()).to(keycloakConfiguration::setAuthenticationRealm);
         mapper.from(keycloak.getAuthenticationUser()).to(keycloakConfiguration::setAuthenticationUser);
