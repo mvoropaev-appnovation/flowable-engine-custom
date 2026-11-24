@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
@@ -52,6 +53,9 @@ public class AdminDatabaseConfiguration {
     @Autowired
     private FlowableAdminAppProperties env;
 
+    @Value("${flowable.database-schema:}")
+    private String databaseSchema;
+
     @Autowired
     private ResourceLoader resourceLoader;
 
@@ -63,7 +67,11 @@ public class AdminDatabaseConfiguration {
 
         try {
             Properties properties = new Properties();
-            properties.put("prefix", env.getDataSourcePrefix());
+            String prefix = env.getDataSourcePrefix();
+            if ((prefix == null || prefix.isEmpty()) && databaseSchema != null && !databaseSchema.isBlank()) {
+                prefix = databaseSchema.trim() + ".";
+            }
+            properties.put("prefix", prefix);
             sqlSessionFactoryBean.setConfigurationProperties(properties);
             sqlSessionFactoryBean
                     .setMapperLocations(ResourcePatternUtils.getResourcePatternResolver(resourceLoader).getResources("classpath:/META-INF/admin-mybatis-mappings/*.xml"));
@@ -99,6 +107,10 @@ public class AdminDatabaseConfiguration {
 
             DatabaseConnection connection = new JdbcConnection(dataSource.getConnection());
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+            if (databaseSchema != null && !databaseSchema.isBlank()) {
+                database.setDefaultSchemaName(databaseSchema.trim());
+                database.setLiquibaseSchemaName(databaseSchema.trim());
+            }
             database.setDatabaseChangeLogTableName(LIQUIBASE_CHANGELOG_PREFIX + database.getDatabaseChangeLogTableName());
             database.setDatabaseChangeLogLockTableName(LIQUIBASE_CHANGELOG_PREFIX + database.getDatabaseChangeLogLockTableName());
 

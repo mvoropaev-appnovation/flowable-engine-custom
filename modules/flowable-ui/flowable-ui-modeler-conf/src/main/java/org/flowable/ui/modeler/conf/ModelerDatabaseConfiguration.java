@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ResourceLoader;
@@ -52,6 +53,9 @@ public class ModelerDatabaseConfiguration {
 
     @Autowired
     protected FlowableModelerAppProperties modelerAppProperties;
+
+    @Value("${flowable.database-schema:}")
+    protected String databaseSchema;
 
     @Autowired
     protected ResourceLoader resourceLoader;
@@ -112,7 +116,11 @@ public class ModelerDatabaseConfiguration {
 
         try {
             Properties properties = new Properties();
-            properties.put("prefix", modelerAppProperties.getDataSourcePrefix());
+            String prefix = modelerAppProperties.getDataSourcePrefix();
+            if ((prefix == null || prefix.isEmpty()) && databaseSchema != null && !databaseSchema.isBlank()) {
+                prefix = databaseSchema.trim() + ".";
+            }
+            properties.put("prefix", prefix);
             properties.put("blobType", "BLOB");
             properties.put("boolValue", "TRUE");
 
@@ -152,6 +160,10 @@ public class ModelerDatabaseConfiguration {
         try {
             DatabaseConnection connection = new JdbcConnection(dataSource.getConnection());
             Database database = DatabaseFactory.getInstance().findCorrectDatabaseImplementation(connection);
+            if (databaseSchema != null && !databaseSchema.isBlank()) {
+                database.setDefaultSchemaName(databaseSchema.trim());
+                database.setLiquibaseSchemaName(databaseSchema.trim());
+            }
             database.setDatabaseChangeLogTableName(LIQUIBASE_CHANGELOG_PREFIX + database.getDatabaseChangeLogTableName());
             database.setDatabaseChangeLogLockTableName(LIQUIBASE_CHANGELOG_PREFIX + database.getDatabaseChangeLogLockTableName());
 
