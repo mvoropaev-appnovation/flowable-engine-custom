@@ -43,7 +43,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
     GlobalAuthenticationConfigurerAdapter.class
 })
 @ConditionalOnBean(IdmIdentityService.class)
-@AutoConfigureBefore(org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration.class)
+@AutoConfigureBefore(org.springframework.boot.security.autoconfigure.SecurityAutoConfiguration.class)
 @AutoConfigureAfter({
     IdmEngineServicesAutoConfiguration.class,
     ProcessEngineAutoConfiguration.class

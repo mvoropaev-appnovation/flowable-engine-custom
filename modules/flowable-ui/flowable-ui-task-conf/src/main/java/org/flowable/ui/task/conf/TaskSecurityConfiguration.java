@@ -20,7 +20,9 @@ import org.flowable.ui.task.properties.FlowableTaskAppProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 /**
@@ -37,9 +39,8 @@ public class TaskSecurityConfiguration {
     // BASIC AUTH
     //
 
-    @Configuration
-    @Order(SecurityConstants.TASK_API_SECURITY_ORDER)
-    public static class TaskApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+    public static class TaskApiWebSecurityConfigurationAdapter {
 
         protected final FlowableRestAppProperties restAppProperties;
         protected final FlowableTaskAppProperties taskAppProperties;
@@ -52,29 +53,31 @@ public class TaskSecurityConfiguration {
             this.apiHttpSecurityCustomizer = apiHttpSecurityCustomizer;
         }
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
+        @Bean
+        @Order(SecurityConstants.TASK_API_SECURITY_ORDER)
+        public SecurityFilterChain flowableTaskApiSecurityFilterChain(HttpSecurity http) throws Exception {
 
-            http.sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and().csrf().disable();
+            http
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .csrf(csrf -> csrf.disable());
 
             if (taskAppProperties.isRestEnabled()) {
 
                 if (restAppProperties.isVerifyRestApiPrivilege()) {
-                    http.antMatcher("/*-api/**").authorizeRequests().antMatchers("/*-api/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API);
+                    http.securityMatcher("/*-api/**").authorizeHttpRequests(requests -> requests.requestMatchers("/*-api/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API));
                 } else {
-                    http.antMatcher("/*-api/**").authorizeRequests().antMatchers("/*-api/**").authenticated();
+                    http.securityMatcher("/*-api/**").authorizeHttpRequests(requests -> requests.requestMatchers("/*-api/**").authenticated());
                     
                 }
 
                 apiHttpSecurityCustomizer.customize(http);
                 
             } else {
-                http.antMatcher("/*-api/**").authorizeRequests().antMatchers("/*-api/**").denyAll();
+                http.securityMatcher("/*-api/**").authorizeHttpRequests(requests -> requests.requestMatchers("/*-api/**").denyAll());
                 
             }
                    
+            return http.build();
         }
     }
 

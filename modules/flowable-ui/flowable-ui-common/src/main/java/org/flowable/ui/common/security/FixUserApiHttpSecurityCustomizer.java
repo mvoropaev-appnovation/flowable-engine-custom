@@ -12,6 +12,7 @@
  */
 package org.flowable.ui.common.security;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
@@ -38,7 +39,7 @@ public class FixUserApiHttpSecurityCustomizer implements ApiHttpSecurityCustomiz
                                 .authorities(DefaultPrivileges.ACCESS_REST_API, DefaultPrivileges.ACCESS_ADMIN)
                                 .build()
                 ))
-                .httpBasic();
+                .httpBasic(Customizer.withDefaults());
 
     }
 }

@@ -21,7 +21,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 /**
@@ -39,9 +41,8 @@ public class ModelerSecurityConfiguration {
     // BASIC AUTH
     //
 
-    @Configuration
-    @Order(SecurityConstants.MODELER_API_SECURITY_ORDER)
-    public static class ModelerApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+    public static class ModelerApiWebSecurityConfigurationAdapter {
 
         protected final FlowableRestAppProperties restAppProperties;
         protected final FlowableModelerAppProperties modelerAppProperties;
@@ -54,32 +55,31 @@ public class ModelerSecurityConfiguration {
             this.apiHttpSecurityCustomizer = apiHttpSecurityCustomizer;
         }
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
+        @Bean
+        @Order(SecurityConstants.MODELER_API_SECURITY_ORDER)
+        public SecurityFilterChain flowableModelerApiSecurityFilterChain(HttpSecurity http) throws Exception {
 
             http
-                .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                    .csrf()
-                    .disable();
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .csrf(csrf -> csrf.disable());
 
             if (modelerAppProperties.isRestEnabled()) {
 
                 if (restAppProperties.isVerifyRestApiPrivilege()) {
-                    http.antMatcher("/api/editor/**").authorizeRequests().antMatchers("/api/editor/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API);
+                    http.securityMatcher("/api/editor/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/editor/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API));
                 } else {
-                    http.antMatcher("/api/editor/**").authorizeRequests().antMatchers("/api/editor/**").authenticated();
+                    http.securityMatcher("/api/editor/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/editor/**").authenticated());
                     
                 }
 
                 apiHttpSecurityCustomizer.customize(http);
                 
             } else {
-                http.antMatcher("/api/editor/**").authorizeRequests().antMatchers("/api/editor/**").denyAll();
+                http.securityMatcher("/api/editor/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/editor/**").denyAll());
                 
             }
             
+            return http.build();
         }
     }
 

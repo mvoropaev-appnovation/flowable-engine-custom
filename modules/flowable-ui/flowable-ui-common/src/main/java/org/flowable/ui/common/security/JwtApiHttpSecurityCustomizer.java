@@ -34,7 +34,7 @@ public class JwtApiHttpSecurityCustomizer implements ApiHttpSecurityCustomizer {
                 .getBeanProvider(JwtDecoder.class)
                 .getIfAvailable();
         if (jwtDecoder != null) {
-            http.oauth2ResourceServer().jwt().jwtAuthenticationConverter(converter);
+            http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(converter)));
         }
     }
 }

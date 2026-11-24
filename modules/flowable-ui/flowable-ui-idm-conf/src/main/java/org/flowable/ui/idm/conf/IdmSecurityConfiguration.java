@@ -22,9 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.http.SessionCreationPolicy;
 
 /**
@@ -35,7 +37,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
  * @author Filip Hrisafov
  */
 @Configuration(proxyBeanMethods = false)
-@EnableGlobalMethodSecurity(prePostEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity(jsr250Enabled = true)
 public class IdmSecurityConfiguration {
 
     //
@@ -59,9 +61,8 @@ public class IdmSecurityConfiguration {
     // BASIC AUTH
     //
 
-    @Configuration
-    @Order(SecurityConstants.IDM_API_SECURITY_ORDER)
-    public static class IdmApiWebSecurityConfigurationAdapter extends WebSecurityConfigurerAdapter {
+    @Configuration(proxyBeanMethods = false)
+    public static class IdmApiWebSecurityConfigurationAdapter {
 
         protected final FlowableRestAppProperties restAppProperties;
         protected final FlowableIdmAppProperties idmAppProperties;
@@ -74,32 +75,31 @@ public class IdmSecurityConfiguration {
             this.apiHttpSecurityCustomizer = apiHttpSecurityCustomizer;
         }
 
-        @Override
-        protected void configure(HttpSecurity http) throws Exception {
+        @Bean
+        @Order(SecurityConstants.IDM_API_SECURITY_ORDER)
+        public SecurityFilterChain flowableIdmApiSecurityFilterChain(HttpSecurity http) throws Exception {
 
             http
-                    .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                    .and()
-                    .csrf()
-                    .disable();
+                    .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    .csrf(csrf -> csrf.disable());
 
             if (idmAppProperties.isRestEnabled()) {
 
                 if (restAppProperties.isVerifyRestApiPrivilege()) {
-                    http.antMatcher("/api/idm/**").authorizeRequests().antMatchers("/api/idm/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API);
+                    http.securityMatcher("/api/idm/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/idm/**").hasAuthority(DefaultPrivileges.ACCESS_REST_API));
                 } else {
-                    http.antMatcher("/api/idm/**").authorizeRequests().antMatchers("/api/idm/**").authenticated();
+                    http.securityMatcher("/api/idm/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/idm/**").authenticated());
                     
                 }
 
                 apiHttpSecurityCustomizer.customize(http);
                 
             } else {
-                http.antMatcher("/api/idm/**").authorizeRequests().antMatchers("/api/idm/**").denyAll();
+                http.securityMatcher("/api/idm/**").authorizeHttpRequests(requests -> requests.requestMatchers("/api/idm/**").denyAll());
                 
             }
             
+            return http.build();
         }
     }
 }

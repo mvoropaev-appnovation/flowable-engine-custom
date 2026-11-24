@@ -18,10 +18,11 @@ import java.util.LinkedHashMap;
 
 import org.flowable.ui.common.properties.FlowableCommonAppProperties;
 import org.springframework.context.ApplicationContext;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.HttpSecurityBuilder;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.ExceptionHandlingConfigurer;
@@ -35,7 +36,7 @@ import org.springframework.security.web.authentication.RememberMeServices;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.session.SessionAuthenticationStrategy;
 import org.springframework.security.web.util.matcher.AndRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.MediaTypeRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestHeaderRequestMatcher;
@@ -60,11 +61,11 @@ public class FlowableUiCustomFormLoginConfigurer<H extends HttpSecurityBuilder<H
         this.authenticationFilter.setPasswordParameter("j_password");
         this.authenticationFilter.setAuthenticationSuccessHandler(new AjaxAuthenticationSuccessHandler());
         this.authenticationFilter.setAuthenticationFailureHandler(new AjaxAuthenticationFailureHandler());
-        this.authenticationFilter.setRequiresAuthenticationRequestMatcher(new AntPathRequestMatcher("/app/authentication", "POST"));
+        this.authenticationFilter.setRequiresAuthenticationRequestMatcher(PathPatternRequestMatcher.withDefaults().matcher(HttpMethod.POST, "/app/authentication"));
     }
 
     @Override
-    public void init(H builder) throws Exception {
+    public void init(H builder) {
         super.init(builder);
 
         AuthenticationEntryPoint authenticationEntryPoint = getAuthenticationEntryPoint(builder.getSharedObject(ApplicationContext.class));
@@ -118,7 +119,7 @@ public class FlowableUiCustomFormLoginConfigurer<H extends HttpSecurityBuilder<H
     }
 
     @Override
-    public void configure(H builder) throws Exception {
+    public void configure(H builder) {
         PortMapper portMapper = builder.getSharedObject(PortMapper.class);
         if (portMapper != null) {
             getAuthenticationEntryPoint(builder.getSharedObject(ApplicationContext.class)).setPortMapper(portMapper);

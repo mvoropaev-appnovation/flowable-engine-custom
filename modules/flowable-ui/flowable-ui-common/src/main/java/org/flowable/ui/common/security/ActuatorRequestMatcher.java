@@ -14,13 +14,13 @@ package org.flowable.ui.common.security;
 
 import java.util.function.Supplier;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointProperties;
-import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
-import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.boot.webmvc.autoconfigure.DispatcherServletPath;
+import org.springframework.boot.security.web.servlet.ApplicationContextRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -91,7 +91,7 @@ public class ActuatorRequestMatcher extends ApplicationContextRequestMatcher<Web
 
         public RequestMatcher antPath(String part) {
             String pattern = ("/".equals(this.servletPath) ? "" : this.servletPath);
-            return new AntPathRequestMatcher(pattern + part);
+            return PathPatternRequestMatcher.withDefaults().matcher(pattern + part);
         }
 
     }

@@ -12,6 +12,7 @@
  */
 package org.flowable.ui.common.security;
 
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 /**
@@ -21,6 +22,6 @@ public class DefaultApiHttpSecurityCustomizer implements ApiHttpSecurityCustomiz
 
     @Override
     public void customize(HttpSecurity http) throws Exception {
-        http.httpBasic();
+        http.httpBasic(Customizer.withDefaults());
     }
 }
