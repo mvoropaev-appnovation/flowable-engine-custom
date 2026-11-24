@@ -14,7 +14,7 @@ package org.flowable.eventregistry.integrationtest;
 
 import java.time.Duration;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.flowable.eventregistry.spring.jms.JmsChannelModelProcessor;

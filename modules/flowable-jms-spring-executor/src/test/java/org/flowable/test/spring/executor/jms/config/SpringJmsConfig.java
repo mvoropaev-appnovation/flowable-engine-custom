@@ -12,7 +12,7 @@
  */
 package org.flowable.test.spring.executor.jms.config;
 
-import javax.jms.ConnectionFactory;
+import jakarta.jms.ConnectionFactory;
 import javax.sql.DataSource;
 
 import org.apache.activemq.ActiveMQConnectionFactory;

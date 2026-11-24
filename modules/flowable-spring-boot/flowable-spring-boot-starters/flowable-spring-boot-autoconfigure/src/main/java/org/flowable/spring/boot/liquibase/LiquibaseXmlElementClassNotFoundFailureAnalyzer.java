@@ -24,7 +24,7 @@ public class LiquibaseXmlElementClassNotFoundFailureAnalyzer extends AbstractFai
     protected FailureAnalysis analyze(Throwable rootFailure, ClassNotFoundException cause) {
         String causeMessage = cause.getMessage();
 
-        if (causeMessage != null && causeMessage.contains("javax.xml.bind.annotation.XmlElement")) {
+        if (causeMessage != null && causeMessage.contains("jakarta.xml.bind.annotation.XmlElement")) {
             for (StackTraceElement stackTraceElement : cause.getStackTrace()) {
                 if (stackTraceElement.getClassName().startsWith("liquibase.pro.packaged")) {
                     return new FailureAnalysis(

@@ -15,7 +15,7 @@ package org.flowable.ui.common.service.idm.cache;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import javax.annotation.PostConstruct;
+import jakarta.annotation.PostConstruct;
 
 import org.flowable.ui.common.properties.FlowableCommonAppProperties;
 import org.springframework.security.authentication.LockedException;

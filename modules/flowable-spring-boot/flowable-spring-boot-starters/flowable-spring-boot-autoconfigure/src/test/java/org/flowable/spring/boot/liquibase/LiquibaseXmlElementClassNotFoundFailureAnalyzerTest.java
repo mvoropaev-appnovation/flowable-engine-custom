@@ -33,7 +33,7 @@ class LiquibaseXmlElementClassNotFoundFailureAnalyzerTest {
 
     @Test
     void noAnalysisWhenStackTraceDoesNotContainLiquibaseProPackage() {
-        ClassNotFoundException failure = new ClassNotFoundException("javax.xml.bind.annotation.XmlElement");
+        ClassNotFoundException failure = new ClassNotFoundException("jakarta.xml.bind.annotation.XmlElement");
         StackTraceElement[] stackTrace = new StackTraceElement[] {
             new StackTraceElement("com.example.test.TestClass", "test()", null, -1),
             new StackTraceElement("com.example.test.TestClass", "testAgain()", null, -1)
@@ -46,7 +46,7 @@ class LiquibaseXmlElementClassNotFoundFailureAnalyzerTest {
 
     @Test
     void analysisWhenStackTraceContainsLiquibaseProPackage() {
-        ClassNotFoundException failure = new ClassNotFoundException("javax.xml.bind.annotation.XmlElement");
+        ClassNotFoundException failure = new ClassNotFoundException("jakarta.xml.bind.annotation.XmlElement");
         StackTraceElement[] stackTrace = new StackTraceElement[] {
             new StackTraceElement("com.example.test.TestClass", "test()", null, -1),
             new StackTraceElement("com.example.test.TestClass", "testAgain()", null, -1),
