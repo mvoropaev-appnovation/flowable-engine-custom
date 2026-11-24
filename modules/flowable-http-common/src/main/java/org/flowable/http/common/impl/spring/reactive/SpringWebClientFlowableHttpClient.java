@@ -32,6 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -211,8 +212,9 @@ public class SpringWebClientFlowableHttpClient implements FlowableAsyncHttpClien
     protected HttpResponse toFlowableHttpResponse(ResponseEntity<ByteArrayResource> response) {
         HttpResponse responseInfo = new HttpResponse();
 
-        responseInfo.setStatusCode(response.getStatusCodeValue());
-        responseInfo.setReason(response.getStatusCode().getReasonPhrase());
+        responseInfo.setStatusCode(response.getStatusCode().value());
+        HttpStatus httpStatus = HttpStatus.resolve(response.getStatusCode().value());
+        responseInfo.setReason(httpStatus != null ? httpStatus.getReasonPhrase() : "");
 
         responseInfo.setHttpHeaders(toFlowableHeaders(response.getHeaders()));
 
@@ -234,7 +236,7 @@ public class SpringWebClientFlowableHttpClient implements FlowableAsyncHttpClien
 
     protected org.flowable.http.common.api.HttpHeaders toFlowableHeaders(HttpHeaders httpHeaders) {
         org.flowable.http.common.api.HttpHeaders headers = new org.flowable.http.common.api.HttpHeaders();
-        headers.putAll(httpHeaders);
+        httpHeaders.forEach(headers::put);
         return headers;
     }
 

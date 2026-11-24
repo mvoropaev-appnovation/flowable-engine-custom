@@ -175,4 +175,9 @@ public class SimpleKafkaListenerEndpoint<K, V> implements KafkaListenerEndpoint,
             + "' | topicPartitions='" + this.topicPartitions + "'"
             + " | messageListener='" + messageListener + "'";
     }
+
+    @Override
+    public String getAckMode() {
+        return null;
+    }
 }
